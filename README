@@ -1,0 +1,11 @@
+Campgrounds Search
+===
+
+Requirements
+---
++ Go to [Active Network API](http://developer.active.com/docs/read/Campground_APIs) to apply an API key and add to your local `APIKey.py`
+
++ Emails can be sent through GMail, by providing `EMail.py` which includes the following
+	1. `SendFrom`: (string) The email used to send to others.
+	2. `Pwd`: (string) The password of `SendFrom` to login to GMail.
+	3. `SendTo`: (list) The list contains email of all receiver(s).

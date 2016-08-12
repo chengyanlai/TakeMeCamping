@@ -6,6 +6,9 @@ import xml.etree.ElementTree as ET
 import mechanize
 # from BeautifulSoup import *
 from bs4 import BeautifulSoup
+import smtplib
+from APIKey import *
+from EMail import *
 
 filename1 = "CACampgrounds.xml"
 if os.path.isfile(filename1):
@@ -16,13 +19,13 @@ else:
 	cgapi_url = "".join(['http://api.amp.active.com/camping/campgrounds?pstate=CA&siteType=2003&api_key=', API_KEY])
 	cgapi = urllib.urlopen(cgapi_url)
 	cgapi_data = cgapi.read()
-	print('Retrieved',len(cgapi_data),'characters')
+	# print('Retrieved',len(cgapi_data),'characters')
 	elems = ET.fromstring(cgapi_data)
 	CampGrounds = elems.findall('.//result')
-	print('Campgrounds Count: ',len(CampGrounds))
+	# print('Campgrounds Count: ',len(CampGrounds))
 	tree = ET.ElementTree(elems)
 	tree.write(filename1)
-	print(filename1, "is saved!")
+	# print(filename1, "is saved!")
 
 # Screen amenities - Showers
 filename2 = "CACampgrounds_Showers.xml"
@@ -42,21 +45,22 @@ else:
 			if campground.get("facilityName") == "MONO HOT SPRINGS" or \
 				 campground.get("facilityName") == "GROVER HOT SPRINGS SP":
 				TargetCampGrounds.append(campground)
-				print(campground.get("facilityName"))
+				# print(campground.get("facilityName"))
 			else:
 				for ams in tree.findall('.//amenity'):
 					if ams.get("name") == "Showers" and ams.get("distance") == "Within Facility":
 						TargetCampGrounds.append(campground)
-						print(campground.get("facilityName"))
+						# print(campground.get("facilityName"))
 	tree = ET.ElementTree(TargetCampGrounds)
 	tree.write(filename2)
-	print(filename2, "is saved!")
+	# print(filename2, "is saved!")
 
 # Searching Criteria
 lengthOfStay = "2" # how many days you plan to stay
 siteCode = "" # the codes of your favorite camp sites here
 date = "09/03/2016" # the date you want to check
 # Looping through all campgrounds
+RESULTs = ""
 for campground in TargetCampGrounds:
 	# url of your desired campground
 	name = campground.get("facilityName").replace(" ", '-')
@@ -102,6 +106,27 @@ for campground in TargetCampGrounds:
 	if( len(hits) > 0 ):
 		hdisplay = ', '.join(hits)
 		hsend = '\n'.join(hits)
-		print("%s - %s : found available sites --> %s" % (campground.get("facilityName"), date, hdisplay ))
-		print(url)
-		print("\n")
+		# print("%s - %s : found available sites --> %s" % (campground.get("facilityName"), date, hdisplay ))
+		# print(url)
+		# print("\n")
+		RESULTs += "%s - %s : found available sites --> %s\n" % (campground.get("facilityName"), date, hdisplay )
+		RESULTs += url
+		RESULTs += "\n\n"
+# print(RESULTs)
+
+# Send out emails
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.ehlo()
+server.starttls()
+server.login(SendFrom, Pwd)
+
+msg = """\
+From: %s
+To: %s
+Subject: %s
+
+%s
+""" % (SendFrom, ", ".join(SendTo), "Campground Update", RESULTs)
+
+server.sendmail(SendFrom, SendTo, msg)
+server.close()
