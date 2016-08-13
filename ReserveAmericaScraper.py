@@ -35,22 +35,22 @@ if os.path.isfile(filename2):
 else:
 	TargetCampGrounds = ET.Element("root")
 	for campground in CampGrounds:
-			# Campsite API to get all amenities.
-			url = "".join(["http://api.amp.active.com/camping/campground/details?contractCode=", \
-											campground.get("contractID"), "&parkId=", campground.get("facilityID"), \
-											"&api_key=", API_KEY])
-			details = urllib.urlopen(url)
-			details_data = details.read()
-			tree = ET.fromstring(details_data)
-			if campground.get("facilityName") == "MONO HOT SPRINGS" or \
-				 campground.get("facilityName") == "GROVER HOT SPRINGS SP":
-				TargetCampGrounds.append(campground)
-				# print(campground.get("facilityName"))
-			else:
-				for ams in tree.findall('.//amenity'):
-					if ams.get("name") == "Showers" and ams.get("distance") == "Within Facility":
-						TargetCampGrounds.append(campground)
-						# print(campground.get("facilityName"))
+		# Campsite API to get all amenities.
+		url = "".join(["http://api.amp.active.com/camping/campground/details?contractCode=", \
+										campground.get("contractID"), "&parkId=", campground.get("facilityID"), \
+										"&api_key=", API_KEY])
+		details = urllib.urlopen(url)
+		details_data = details.read()
+		tree = ET.fromstring(details_data)
+		if campground.get("facilityName") == "MONO HOT SPRINGS" or \
+			 campground.get("facilityName") == "GROVER HOT SPRINGS SP":
+			TargetCampGrounds.append(campground)
+			# print(campground.get("facilityName"))
+		else:
+			for ams in tree.findall('.//amenity'):
+				if ams.get("name") == "Showers" and ams.get("distance") == "Within Facility":
+					TargetCampGrounds.append(campground)
+					# print(campground.get("facilityName"))
 	tree = ET.ElementTree(TargetCampGrounds)
 	tree.write(filename2)
 	# print(filename2, "is saved!")
@@ -119,14 +119,14 @@ server = smtplib.SMTP('smtp.gmail.com', 587)
 server.ehlo()
 server.starttls()
 server.login(SendFrom, Pwd)
-
+Subject = "".join(["Campground Update for ", date])
 msg = """\
 From: %s
 To: %s
 Subject: %s
 
 %s
-""" % (SendFrom, ", ".join(SendTo), "Campground Update", RESULTs)
+""" % (SendFrom, ", ".join(SendTo), Subject, RESULTs)
 
 server.sendmail(SendFrom, SendTo, msg)
 server.close()
