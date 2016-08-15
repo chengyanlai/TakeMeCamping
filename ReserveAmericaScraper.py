@@ -59,6 +59,8 @@ else:
 lengthOfStay = "2" # how many days you plan to stay
 siteCode = "" # the codes of your favorite camp sites here
 date = "09/03/2016" # the date you want to check
+# Give the Google maps link
+GOOGLE_MAPS = "https://maps.google.com/maps/?q="
 # Looping through all campgrounds
 RESULTs = ""
 for campground in TargetCampGrounds:
@@ -110,23 +112,28 @@ for campground in TargetCampGrounds:
 		# print(url)
 		# print("\n")
 		RESULTs += "%s - %s : found available sites --> %s\n" % (campground.get("facilityName"), date, hdisplay )
+		RESULTs += "".join([GOOGLE_MAPS, campground.get("latitude"), ",",
+												campground.get("longitude"), "\n"])
 		RESULTs += url
 		RESULTs += "\n\n"
 # print(RESULTs)
+Email_Alerts = False
+if Email_Alerts:
+	# Send out emails
+	server = smtplib.SMTP('smtp.gmail.com', 587)
+	server.ehlo()
+	server.starttls()
+	server.login(SendFrom, Pwd)
+	Subject = "".join(["Campground Update for ", date])
+	msg = """\
+	From: %s
+	To: %s
+	Subject: %s
 
-# Send out emails
-server = smtplib.SMTP('smtp.gmail.com', 587)
-server.ehlo()
-server.starttls()
-server.login(SendFrom, Pwd)
-Subject = "".join(["Campground Update for ", date])
-msg = """\
-From: %s
-To: %s
-Subject: %s
+	%s
+	""" % (SendFrom, ", ".join(SendTo), Subject, RESULTs)
 
-%s
-""" % (SendFrom, ", ".join(SendTo), Subject, RESULTs)
-
-server.sendmail(SendFrom, SendTo, msg)
-server.close()
+	server.sendmail(SendFrom, SendTo, msg)
+	server.close()
+else:
+	print(RESULTs)
