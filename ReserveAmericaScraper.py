@@ -123,20 +123,27 @@ def SearchCampground(SearchParameters, TargetCampGrounds):
 
 if __name__ == "__main__":
 	htmlt = Template(body)
-	Campgrounds = CADataBaseShower()
-	DateLength = [("Labor_Day", "09/13/2016", "1"), ]
+	fname = 'index.html'
+	f = open(fname, 'w')
+	f.write(head)
+	f.close()
+	if os.path.isfile('CADesire.xml'):
+		tree = ET.parse('CADesire.xml').getroot()
+		Campgrounds = tree.findall('.//result')
+	else:
+		Campgrounds = CADataBaseShower()
+	DateLength = [
+		("Labor Day", "09/10/2016", "1"), \
+		("Memorial Day", "09/24/2016", "2"), \
+		]
 	for (tag, date, length) in DateLength:
 		result = SearchCampground({"date":date, "length":length}, Campgrounds)
-		# print("Start Date: ", date, " with length of stay: ", length, " campgrounds found - ")
-		# print(result)
-		f = open("".join([tag, '.html']), 'w')
-		f.write(head)
-		f.close()
-		with open("".join([tag, '.html']), 'a') as f:
+		with open(fname, 'a') as f:
 			f.write(htmlt.render(header1=tag, lines=result))
-		f = open("".join([tag, '.html']), 'a')
-		f.write(tail)
-		f.close()
+	f = open(fname, 'a')
+	f.write(tail)
+	f.close()
+	print("Campgrounds searching is finished.")
 
 	# Email_Alerts = False
 	# if Email_Alerts:
