@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from APIKey import *
 from HTMLparser import *
 import smtplib
-from EMail import *
+# from EMail import *
 
 def CADataBase():
 	filename1 = "CACampgrounds.xml"
@@ -21,6 +21,7 @@ def CADataBase():
 		cgapi = urllib.urlopen(cgapi_url)
 		cgapi_data = cgapi.read()
 		# print('Retrieved',len(cgapi_data),'characters')
+		print(cgapi_data)
 		elems = ET.fromstring(cgapi_data)
 		CampGrounds = elems.findall('.//result')
 		# print('Campgrounds Count: ',len(CampGrounds))
@@ -133,8 +134,8 @@ if __name__ == "__main__":
 	else:
 		Campgrounds = CADataBaseShower()
 	DateLength = [
-		("Labor Day", "09/10/2016", "1"), \
-		("Memorial Day", "09/24/2016", "2"), \
+		("Normal Day", "05/20/2017", "2"), \
+		("Memorial Day", "06/27/2017", "2"), \
 		]
 	for (tag, date, length) in DateLength:
 		result = SearchCampground({"date":date, "length":length}, Campgrounds)
