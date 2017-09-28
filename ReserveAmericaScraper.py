@@ -134,8 +134,12 @@ if __name__ == "__main__":
 	else:
 		Campgrounds = CADataBaseShower()
 	DateLength = [
-		("Normal Day", "05/20/2017", "2"), \
-		("Memorial Day", "06/27/2017", "2"), \
+		("05/20", "05/20/2017", "2"), \
+		("Memorial Day", "05/27/2017", "2"), \
+		("06/10", "06/10/2017", "2"), \
+		("06/17", "06/17/2017", "2"), \
+		("06/24", "06/24/2017", "2"), \
+		("July 4th", "07/01/2017", "3"), \
 		]
 	for (tag, date, length) in DateLength:
 		result = SearchCampground({"date":date, "length":length}, Campgrounds)
